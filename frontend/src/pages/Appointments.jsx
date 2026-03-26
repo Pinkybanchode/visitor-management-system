@@ -4,6 +4,8 @@ import API from "../api/axios";
 const Appointments = () => {
   const [appointments, setAppointments] = useState([]);
   const [message, setMessage] = useState("");
+  //const backend_URI = `http://localhost:4000`;
+  const backend_URI = `https://visitor-management-system-i849.onrender.com`
   const fetchAppointments = async () => {
     try {
       const res = await API.get("/appointment/my");
@@ -52,7 +54,7 @@ const Appointments = () => {
               <div className="flex gap-4 items-center">
                 {appt.visitorId?.photo && (
                   <img
-                    src={`http://localhost:4000/uploads/${appt.visitorId.photo}`}
+                    src={`${backend_URI}/uploads/${appt.visitorId.photo}`}
                     alt="visitor"
                     className="w-16 h-16 rounded object-cover"
                   />

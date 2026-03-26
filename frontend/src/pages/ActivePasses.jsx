@@ -4,7 +4,8 @@ import API from "../api/axios";
 const ActivePasses = () => {
   const [passes, setPasses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const backend_URI = `http://localhost:4000`;
+  //const backend_URI = `http://localhost:4000`;
+  const backend_URI = `https://visitor-management-system-i849.onrender.com`
   const fetchActivePasses = async () => {
     try {
       const res = await API.get("/passes/all");
