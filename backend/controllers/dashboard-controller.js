@@ -80,11 +80,78 @@ exports.getReport = async (req, res) => {
   }
 };
 
+
+exports.getLogs = async (req, res) => {
+  try {
+    const { search, status, fromDate, toDate } = req.query;
+
+    let query = {};
+
+    // 📅 Date filter (FULL DAY FIX)
+    if (fromDate || toDate) {
+      query.createdAt = {};
+
+      if (fromDate) {
+        const start = new Date(fromDate);
+        start.setHours(0, 0, 0, 0);
+        query.createdAt.$gte = start;
+      }
+
+      if (toDate) {
+        const end = new Date(toDate);
+        end.setHours(23, 59, 59, 999);
+        query.createdAt.$lte = end;
+      }
+    }
+
+    // 🔥 Fetch logs
+    let logs = await Log.find(query)
+      .populate("visitorId", "name email")
+      .populate({
+        path: "passId",
+        match: status ? { visitStatus: status } : {},
+        select: "visitStatus validFrom validTo"
+      })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    // ✅ Filter logs where pass doesn't match status
+    if (status) {
+      logs = logs.filter(log => log.passId);
+    }
+
+    // 🔍 Search filter (after populate)
+    if (search) {
+      const s = search.toLowerCase();
+
+      logs = logs.filter(log =>
+        log.visitorId?.name?.toLowerCase().includes(s) ||
+        log.visitorId?.email?.toLowerCase().includes(s)
+      );
+    }
+
+    // ✅ Final clean response
+    const result = logs.map(log => ({
+      name: log.visitorId?.name || "",
+      email: log.visitorId?.email || "",
+      visitStatus: log.passId?.visitStatus || "",
+      checkInTime: log.checkInTime,
+      checkOutTime: log.checkOutTime,
+      date: log.createdAt
+    }));
+
+    res.json({ data: result });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 exports.getJson = async (req, res) => {
   try {
-    const data = await Log.find().populate("visitorId");
+    const data = await Log.find().populate("visitorId").populate("passId");
 
-    const fields = ["visitorId.name", "visitorId.email", "status", "validFrom"];
+    const fields = ["visitorId.name", "visitorId.email", "visitStatus", "checkInTime", "checkOutTime"];
     const parser = new Parser({ fields });
 
     const csv = parser.parse(data);

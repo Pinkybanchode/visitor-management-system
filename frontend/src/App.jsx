@@ -14,7 +14,6 @@ import Navbar from "./components/navbar";
 import ApprovedAppointments from "./pages/ApprovedAppointments";
 import Logs from "./pages/Logs"
 import WalkInVisitor from "./pages/CreatePass";
-import Report from "./pages/Report"
 function App() {
   return (
     <BrowserRouter>
@@ -30,14 +29,6 @@ function App() {
             element={
               <ProtectedRoute roles={["admin"]}>
                 <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="reports"
-            element={
-              <ProtectedRoute roles={["admin"]}>
-                <Report />
               </ProtectedRoute>
             }
           />
@@ -100,7 +91,7 @@ function App() {
           <Route
             path="logs"
             element={
-              <ProtectedRoute roles={["security"]}>
+              <ProtectedRoute roles={["security", "admin"]}>
                 < Logs/>
               </ProtectedRoute>
             }
