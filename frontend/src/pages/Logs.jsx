@@ -32,7 +32,7 @@ const Logs = () => {
     fetchLogs();
   }, []);
 
-  // 🔥 Export CSV
+
   const handleExport = async () => {
     const res = await API.get("/dashboard/export", {
       responseType: "blob"
@@ -50,7 +50,6 @@ const Logs = () => {
 
       <h2 className="text-2xl font-bold mb-4">Visitor Logs</h2>
 
-      {/* Filters */}
       <div className="bg-white p-4 rounded shadow mb-4 flex flex-wrap gap-3">
 
         <input
@@ -105,7 +104,6 @@ const Logs = () => {
 
       </div>
 
-      {/* Table */}
       <div className="bg-white shadow rounded overflow-hidden">
 
         {loading ? (

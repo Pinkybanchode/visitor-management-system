@@ -87,7 +87,6 @@ exports.getLogs = async (req, res) => {
 
     let query = {};
 
-    // 📅 Date filter (FULL DAY FIX)
     if (fromDate || toDate) {
       query.createdAt = {};
 
@@ -103,8 +102,6 @@ exports.getLogs = async (req, res) => {
         query.createdAt.$lte = end;
       }
     }
-
-    // 🔥 Fetch logs
     let logs = await Log.find(query)
       .populate("visitorId", "name email")
       .populate({
@@ -115,12 +112,10 @@ exports.getLogs = async (req, res) => {
       .sort({ createdAt: -1 })
       .lean();
 
-    // ✅ Filter logs where pass doesn't match status
     if (status) {
       logs = logs.filter(log => log.passId);
     }
 
-    // 🔍 Search filter (after populate)
     if (search) {
       const s = search.toLowerCase();
 
@@ -130,7 +125,6 @@ exports.getLogs = async (req, res) => {
       );
     }
 
-    // ✅ Final clean response
     const result = logs.map(log => ({
       name: log.visitorId?.name || "",
       email: log.visitorId?.email || "",
