@@ -146,7 +146,7 @@ const AppointmentForm = () => {
             type="file"
             accept="image/*"
             onChange={handleFile}
-            className="border p-2 rounded-lg"
+            className="border p-2 rounded-lg file:mr-4 file:py-2 file:px-4 file:border-0 file:bg-blue-500 file:text-white file:rounded file:cursor-pointer"
           />
           {preview && (
             <img
