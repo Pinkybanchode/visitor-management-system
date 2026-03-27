@@ -32,7 +32,7 @@ exports.createAppointment = async (req, res) => {
       photo,
       hostId: host._id
     });
-
+    }
     const appointment = await Appointment.create({
       visitorId: visitor._id,
       hostId: host._id,
