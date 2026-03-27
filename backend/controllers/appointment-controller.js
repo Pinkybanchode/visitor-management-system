@@ -22,7 +22,7 @@ exports.createAppointment = async (req, res) => {
     }
 
     const photo = req.file ? req.file.filename : null;
-    let visitor = await Visitor.findOne({ email });
+    let visitor = await Visitor.findOne({ email:visitorEmail });
 
     if (!visitor) {
      visitor = await Visitor.create({
