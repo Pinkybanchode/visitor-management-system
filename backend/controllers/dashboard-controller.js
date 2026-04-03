@@ -23,7 +23,8 @@ exports.getStatics = async (req, res) => {
       checkOutTime: { $exists: false }
     });
 
-    res.json({
+    res.status(200).json({
+      success:true,
       totalVisits,
       todayCheckIns,
       todayCheckOuts,
@@ -31,7 +32,7 @@ exports.getStatics = async (req, res) => {
     });
 
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ success:false, error: err.message });
   }
 };
 exports.getReport = async (req, res) => {
@@ -73,10 +74,13 @@ exports.getReport = async (req, res) => {
       );
     }
 
-    res.json(logs);
+    res.status(200).json({
+      success:true,
+      logs
+    });
 
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ success:false,error: err.message });
   }
 };
 
@@ -134,10 +138,10 @@ exports.getLogs = async (req, res) => {
       date: log.createdAt
     }));
 
-    res.json({ data: result });
+    res.status(200).json({ success:true,data: result });
 
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ success:false, error: err.message });
   }
 };
 

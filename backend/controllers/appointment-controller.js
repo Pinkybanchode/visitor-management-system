@@ -1,6 +1,8 @@
 const Appointment = require("../models/appointment");
 const Visitor = require("../models/visitor")
 const User = require("../models/user")
+const { sendSMS } = require("../utils/Notifications");
+const {validateVisitor} = require("../utils/Validators")
 exports.createAppointment = async (req, res) => {
   console.log("appt creation post call");
   try {
@@ -17,12 +19,16 @@ exports.createAppointment = async (req, res) => {
 
     if (!host) {
       return res.status(404).json({
-        message: "Host not found",
+        success:false,
+        error: "Host not found",
       });
     }
 
     const photo = req.file ? req.file.filename : null;
-
+    const { isValid, errors } = validateVisitor({name:visitorName, email:visitorEmail, phone:visitorPhone});
+    if (!isValid) {
+      return res.status(400).json({ success:false, error:errors });
+    }
     const visitor = await Visitor.create({
       name: visitorName,
       email: visitorEmail,
@@ -38,13 +44,19 @@ exports.createAppointment = async (req, res) => {
       visitDate: new Date(date),
       status: "pending",
     });
+    
+    // await sendSMS({
+    //   to: `+91${visitor.phone}`,
+    //   message:`Hello ${visitor.name}, Your Appointment created successfully`
+    // })
 
-    res.status(201).json({
-      message: "Appointment created successfully",
+    res.status(200).json({
+      success:true,
       data: appointment,
     });
   } catch (error) {
-    res.status(400).json({
+    res.status(500).json({
+      success:false,
       error: error.message,
     });
   }
@@ -61,12 +73,14 @@ exports.getMyAppointments = async (req, res) => {
       .populate("visitorId")
       .sort({ createdAt: -1 });
 
-    res.json({
+    res.status(200).json({
+      success:true,
       count: appointments.length,
       data: appointments,
     });
   } catch (error) {
     res.status(500).json({
+      success:false,
       error: error.message,
     });
   }
@@ -85,11 +99,12 @@ exports.updateAppointmentStatus = async (req, res) => {
     appt.status = status;
     await appt.save();
 
-    res.json({
+    res.status(200).json({
+      success:true,
       data: appt
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ success:false, error: error.message });
   }
 };
 
@@ -103,7 +118,7 @@ exports.getApprovedAppointments = async (req, res) => {
       .populate("hostId", "name email")
       .sort({ createdAt: -1 });
 
-    res.json({
+    res.status(200).json({
       success: true,
       count: appointments.length,
       data: appointments,

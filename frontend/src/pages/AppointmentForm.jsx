@@ -84,15 +84,8 @@ const AppointmentForm = () => {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
 
-          <input
-            type="text"
-            name="visitorName"
-            placeholder="Visitor Name"
-            value={formData.visitorName}
-            onChange={handleChange}
-            required
-            className="border p-2 rounded-lg"
-          />
+          <input type="text" name="visitorName" placeholder="Visitor Name" value={formData.visitorName} onChange={handleChange}
+            required className="border p-2 rounded-lg"/>
 
           <input
             type="email"

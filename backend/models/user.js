@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
-const validator = require("validator")
+const validateUser = require("../utils/Validators")
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -23,11 +23,9 @@ const userSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 userSchema.statics.register = async function (name, email, password, role) {
-    if(!validator.isEmail(email)){
-        throw Error("Email is Invalid")
-    }
-    if(!validator.isStrongPassword(password)){
-        throw Error("Password is not strong")
+    const { isValid, errors } = validateUser({name, email, password});
+    if (!isValid) {
+      return res.status(400).json({ success:false, error:errors });
     }
     const exists = await this.findOne({ email });
     if (exists){

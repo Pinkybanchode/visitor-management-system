@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const API = axios.create({
- // baseURL: "http://localhost:4000/api"
- baseURL:`https://visitor-management-system-i849.onrender.com`
+  baseURL: "http://localhost:4000/api"
+ //baseURL:`https://visitor-management-system-i849.onrender.com/api`
 });
 
 API.interceptors.request.use((req) => {

@@ -1,15 +1,17 @@
 const nodemailer = require("nodemailer");
+const twilio = require("twilio");
 
 exports.sendPassEmail = async (visitorName, visitorEmail, qrCode) => {
   try {
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT,
+      secure: process.env.SMTP_PORT == 465, 
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-      }
+        pass: process.env.EMAIL_PASS,
+      },
     });
-
     const mailOptions = {
       from: `"Visitor System" <${process.env.EMAIL_USER}>`,
       to: visitorEmail,
@@ -22,7 +24,7 @@ exports.sendPassEmail = async (visitorName, visitorEmail, qrCode) => {
           
           <p><b>Please show this QR code at the entrance:</b></p>
           
-          <img src="${qrCode}" width="200" />
+          <img src="cid:qrcode" />
           
           <p>Valid for next 24 hours.</p>
           <br/>
@@ -45,6 +47,28 @@ exports.sendPassEmail = async (visitorName, visitorEmail, qrCode) => {
 
   } catch (error) {
     console.error("Email error:", error);
+    throw error;
+  }
+};
+
+const client = twilio(
+  process.env.TWILIO_SID,
+  process.env.TWILIO_AUTH_TOKEN
+);
+
+
+exports.sendSMS = async ({ to, message }) => {
+  try {
+    console.log(client, process.env.TWILIO_PHONE)
+    const response = await client.messages.create({
+      body: message,
+      from: process.env.TWILIO_PHONE,
+      to,
+    });
+
+    console.log("SMS sent..");
+  } catch (error) {
+    console.error("SMS error:", error.message);
     throw error;
   }
 };
